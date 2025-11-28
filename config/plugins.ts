@@ -1,20 +1,23 @@
 export default ({ env }) => ({
   upload: {
     config: {
-      provider: '@strapi/provider-upload-aws-s3',
+      provider: 'aws-s3',
       providerOptions: {
         s3Options: {
           endpoint: env('SPACES_ENDPOINT'),
-          region: env('SPACES_REGION', 'nyc3'),
+          region: 'us-east-1',
+          forcePathStyle: false,
           credentials: {
             accessKeyId: env('SPACES_KEY'),
             secretAccessKey: env('SPACES_SECRET'),
           },
-        },
-        params: {
-          Bucket: env('SPACES_BUCKET'),
+          params: {
+            Bucket: env('SPACES_BUCKET'),
+            ACL: 'public-read',
+          },
         },
         baseUrl: env('SPACES_BASE_URL'),
+        prefix: env('SPACES_PREFIX', 'uploads'),
       },
       actionOptions: {
         upload: {},
