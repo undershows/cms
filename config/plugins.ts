@@ -19,6 +19,20 @@ export default ({ env }) => ({
         baseUrl: env('SPACES_BASE_URL'),
         prefix: env('SPACES_PREFIX', 'uploads'),
       },
+
+      security: {
+        enabled: true,
+        sizeLimit: 10 * 1024 * 1024,
+        allowedExtensions: [
+          '.jpg',
+          '.jpeg',
+          '.png',
+          '.webp',
+          '.gif',
+          '.svg',
+        ],
+      },
+
       actionOptions: {
         upload: {},
         uploadStream: {},
