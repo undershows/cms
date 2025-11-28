@@ -20,17 +20,11 @@ export default ({ env }) => ({
         prefix: env('SPACES_PREFIX', 'uploads'),
       },
 
+      sizeLimit: 10 * 1024 * 1024,
+
       security: {
-        enabled: true,
-        sizeLimit: 10 * 1024 * 1024,
-        allowedExtensions: [
-          '.jpg',
-          '.jpeg',
-          '.png',
-          '.webp',
-          '.gif',
-          '.svg',
-        ],
+        allowedTypes: ['image/*'],
+        deniedTypes: ['application/x-sh', 'application/x-dosexec'],
       },
 
       actionOptions: {
