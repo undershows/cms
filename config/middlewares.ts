@@ -17,14 +17,30 @@ export default [
             "'self'",
             'data:',
             'blob:',
-            'undershows.nyc3.cdn.digitaloceanspaces.com',
+            'https://undershows.nyc3.cdn.digitaloceanspaces.com',
           ],
           'frame-src': ["'self'", 'https:'],
         },
       },
     },
   },
-  'strapi::cors',
+
+  {
+    name: 'strapi::cors',
+    config: {
+      enabled: true,
+      origin: [
+        'http://localhost:4321',
+        'http://127.0.0.1:4321',
+        'https://shows.undershows.com.br',
+        'https://cms.undershows.com.br',
+      ],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+      keepHeaderOnError: true,
+    },
+  },
+
   'strapi::poweredBy',
   'strapi::logger',
   'strapi::query',
