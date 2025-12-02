@@ -3,13 +3,13 @@
 const fetch = require("node-fetch");
 
 async function triggerGithub() {
-  const owner = process.env.GITHUB_OWNER;
-  const repo = process.env.GITHUB_REPO;
-  const token = process.env.GITHUB_TOKEN;
-  const eventType = process.env.GITHUB_EVENT_TYPE || "rebuild_site";
+  const owner = process.env.REPO_OWNER;
+  const repo = process.env.REPO_NAME;
+  const token = process.env.REPO_TOKEN;
+  const eventType = process.env.REPO_EVENT_TYPE || "rebuild_site";
 
   if (!owner || !repo || !token) {
-    strapi.log.error("GITHUB_* env vars não configuradas, não vou disparar build.");
+    strapi.log.error("REPO_* env vars não configuradas, não vou disparar build.");
     return;
   }
 
