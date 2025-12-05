@@ -50,10 +50,9 @@ async function triggerGithub(strapi: Core.Strapi) {
 }
 
 export default {
-  register(/* { strapi }: { strapi: Core.Strapi } */) {},
+  register() {},
 
   bootstrap({ strapi }: { strapi: Core.Strapi }) {
-    // Debug das envs na subida
     strapi.log.info('🔍 ENV DEBUG', {
       GITHUB_OWNER: process.env.GITHUB_OWNER,
       GITHUB_REPO: process.env.GITHUB_REPO,
@@ -67,23 +66,27 @@ export default {
     strapi.db.lifecycles.subscribe({
       models: ['api::show.show'],
 
+      // 👉 Não dispara nada na criação, só loga
       async afterCreate(event) {
+        const { result } = event;
         strapi.log.info(
-          '[lifecycles global] afterCreate(show) chamado, disparando triggerGithub()'
+          `[lifecycles global] afterCreate(show) id=${result?.id} publishedAt=${result?.publishedAt}`
         );
-        await triggerGithub(strapi);
       },
 
+      // 👉 Só dispara quando o registro ESTÁ publicado
       async afterUpdate(event) {
         const { result } = event;
 
+        const isPublished = !!result?.publishedAt;
+
         strapi.log.info(
-          `[lifecycles global] afterUpdate(show) chamado (id=${result?.id}, publishedAt=${result?.publishedAt})`
+          `[lifecycles global] afterUpdate(show) id=${result?.id} isPublished=${isPublished}`
         );
 
-        if (result?.publishedAt) {
+        if (isPublished) {
           strapi.log.info(
-            '[lifecycles global] Registro publicado, disparando triggerGithub()'
+            '[lifecycles global] Registro publicado/atualizado, disparando triggerGithub()'
           );
           await triggerGithub(strapi);
         } else {
