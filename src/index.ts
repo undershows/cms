@@ -1,6 +1,8 @@
 import type { Core } from '@strapi/strapi';
 import fetch from 'node-fetch';
 
+const lastTriggered: Record<string | number, string> = {};
+
 async function triggerGithub(strapi: Core.Strapi) {
   const owner = process.env.GITHUB_OWNER;
   const repo = process.env.GITHUB_REPO;
@@ -49,6 +51,40 @@ async function triggerGithub(strapi: Core.Strapi) {
   }
 }
 
+function shouldTriggerOnce(event: any, strapi: Core.Strapi): boolean {
+  const { result } = event;
+  const id = result?.id;
+  const publishedAt = result?.publishedAt;
+  const updatedAt = result?.updatedAt;
+
+  // se não estiver publicado, nem pensa em build
+  if (!publishedAt) {
+    strapi.log.info(
+      `[lifecycles global] id=${id} ainda não publicado (publishedAt vazio), não disparando build.`
+    );
+    return false;
+  }
+
+  if (!id || !updatedAt) {
+    strapi.log.warn(
+      '[lifecycles global] Sem id ou updatedAt no result, disparando build por segurança.'
+    );
+    return true;
+  }
+
+  const last = lastTriggered[id];
+
+  if (last === updatedAt) {
+    strapi.log.info(
+      `[lifecycles global] Já disparei build para id=${id} em updatedAt=${updatedAt}, ignorando chamada duplicada.`
+    );
+    return false;
+  }
+
+  lastTriggered[id] = updatedAt;
+  return true;
+}
+
 export default {
   register() {},
 
@@ -66,33 +102,31 @@ export default {
     strapi.db.lifecycles.subscribe({
       models: ['api::show.show'],
 
-      // 👉 Não dispara nada na criação, só loga
       async afterCreate(event) {
         const { result } = event;
         strapi.log.info(
-          `[lifecycles global] afterCreate(show) id=${result?.id} publishedAt=${result?.publishedAt}`
-        );
-      },
-
-      // 👉 Só dispara quando o registro ESTÁ publicado
-      async afterUpdate(event) {
-        const { result } = event;
-
-        const isPublished = !!result?.publishedAt;
-
-        strapi.log.info(
-          `[lifecycles global] afterUpdate(show) id=${result?.id} isPublished=${isPublished}`
+          `[lifecycles global] afterCreate(show) id=${result?.id} publishedAt=${result?.publishedAt} updatedAt=${result?.updatedAt}`
         );
 
-        if (isPublished) {
+        if (shouldTriggerOnce(event, strapi)) {
           strapi.log.info(
-            '[lifecycles global] Registro publicado/atualizado, disparando triggerGithub()'
+            '[lifecycles global] afterCreate => registro publicado, disparando triggerGithub()'
           );
           await triggerGithub(strapi);
-        } else {
+        }
+      },
+
+      async afterUpdate(event) {
+        const { result } = event;
+        strapi.log.info(
+          `[lifecycles global] afterUpdate(show) id=${result?.id} publishedAt=${result?.publishedAt} updatedAt=${result?.updatedAt}`
+        );
+
+        if (shouldTriggerOnce(event, strapi)) {
           strapi.log.info(
-            '[lifecycles global] Registro ainda não publicado, não disparando build.'
+            '[lifecycles global] afterUpdate => registro publicado, disparando triggerGithub()'
           );
+          await triggerGithub(strapi);
         }
       },
     });
