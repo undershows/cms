@@ -35,13 +35,10 @@ jobs:
         run: |
           ssh server << 'EOF'
             cd /var/www/cms/
-
             export NODE_OPTIONS="--max_old_space_size=2048"
-
+            git pull origin main
             yarn install
             yarn build
-
             pm2 restart 1337-cms.undershows.com.br
-
             chown -R www-data:www-data /var/www/cms/
           EOF
