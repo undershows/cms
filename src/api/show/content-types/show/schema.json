@@ -67,6 +67,9 @@
     "ticket_link": {
       "type": "string"
     },
+    "bands": {
+      "type": "string"
+    },
     "poster": {
       "type": "media",
       "multiple": false,
