@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install SSH Client
         run: sudo apt-get update && sudo apt-get install -y openssh-client
@@ -34,11 +34,21 @@ jobs:
       - name: Deploy to Server 🚀
         run: |
           ssh server << 'EOF'
+            set -euo pipefail
+
             cd /var/www/cms/
-            export NODE_OPTIONS="--max_old_space_size=2048"
-            git pull origin main
-            yarn install
-            yarn build
-            pm2 restart 1337-cms.undershows.com.br
-            chown -R www-data:www-data /var/www/cms/
+            git fetch --all
+            git reset --hard origin/main
+
+            docker build -t undershows-cms .
+
+            docker stop undershows-cms || true
+            docker rm undershows-cms || true
+
+            docker run -d --name undershows-cms --restart unless-stopped --env-file .env -p 127.0.0.1:1337:1337 -v $(pwd)/public/uploads:/app/public/uploads --read-only --tmpfs /tmp --tmpfs /app/.cache --tmpfs /app/.tmp --cap-drop ALL --security-opt no-new-privileges:true undershows-cms
+
+            sleep 2
+            docker ps --filter "name=undershows-cms" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+            docker logs --tail=80 undershows-cms
+
           EOF
