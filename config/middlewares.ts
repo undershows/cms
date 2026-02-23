@@ -6,7 +6,10 @@ export default [
       contentSecurityPolicy: {
         useDefaults: true,
         directives: {
-          'connect-src': ["'self'", 'https:'],
+          'connect-src': [
+            "'self'",
+            'https://cms.undershows.com.br',
+            'https://media.undershows.com.br'],
           'img-src': [
             "'self'",
             'data:',
@@ -30,8 +33,6 @@ export default [
     config: {
       enabled: true,
       origin: [
-        'http://localhost:4321',
-        'http://127.0.0.1:4321',
         'https://shows.undershows.com.br',
         'https://cms.undershows.com.br',
       ],
