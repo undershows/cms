@@ -4,20 +4,20 @@ export default ({ env }) => ({
       provider: 'aws-s3',
       providerOptions: {
         s3Options: {
-          endpoint: env('SPACES_ENDPOINT'),
-          region: 'us-east-1',
-          forcePathStyle: false,
+          endpoint: env('MAGALU_S3_ENDPOINT'),
+          region: 'br-se1',
+          forcePathStyle: true,
+          signatureVersion: 'v4',
           credentials: {
-            accessKeyId: env('SPACES_KEY'),
-            secretAccessKey: env('SPACES_SECRET'),
+            accessKeyId: env('MAGALU_S3_KEY'),
+            secretAccessKey: env('MAGALU_S3_SECRET'),
           },
           params: {
-            Bucket: env('SPACES_BUCKET'),
-            ACL: 'public-read',
+            Bucket: env('MAGALU_S3_BUCKET'),
           },
         },
-        baseUrl: env('SPACES_BASE_URL'),
-        prefix: env('SPACES_PREFIX', 'uploads'),
+
+        baseUrl: env('MAGALU_S3_BASE_URL', 'https://undershows.br-se1.magaluobjects.com'),
       },
 
       sizeLimit: 10 * 1024 * 1024,
@@ -25,12 +25,6 @@ export default ({ env }) => ({
       security: {
         allowedTypes: ['image/*'],
         deniedTypes: ['application/x-sh', 'application/x-dosexec'],
-      },
-
-      actionOptions: {
-        upload: {},
-        uploadStream: {},
-        delete: {},
       },
     },
   },
@@ -47,4 +41,4 @@ export default ({ env }) => ({
       },
     },
   },
-});
+})
