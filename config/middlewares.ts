@@ -9,7 +9,9 @@ export default [
           'connect-src': [
             "'self'",
             'https://cms.undershows.com.br',
-            'https://media.undershows.com.br'],
+            'https://media.undershows.com.br',
+            'https://api.github.com'
+          ],
           'img-src': [
             "'self'",
             'data:',
