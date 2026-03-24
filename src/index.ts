@@ -129,6 +129,15 @@ export default {
           await triggerGithub(strapi);
         }
       },
+
+      async afterDelete(event) {
+        const { result } = event;
+        strapi.log.info(
+          `[lifecycles global] afterDelete(show) id=${result?.id}, disparando triggerGithub()`
+        );
+
+        await triggerGithub(strapi);
+      },
     });
   },
 };
