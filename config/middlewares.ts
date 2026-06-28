@@ -1,6 +1,5 @@
 export default [
   'strapi::errors',
-  'global::recaptcha',
   {
     name: 'strapi::security',
     config: {
@@ -57,6 +56,7 @@ export default [
   'strapi::logger',
   'strapi::query',
   'strapi::body',
+  'global::recaptcha',
   'strapi::favicon',
   'strapi::public',
 ];
