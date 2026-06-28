@@ -16,12 +16,21 @@ function patchLoginFetch() {
 
     if (url && url.includes('/admin/login') && init?.method === 'POST') {
       try {
-        await new Promise((resolve) => {
-          const check = () => (window.grecaptcha?.ready ? resolve(null) : setTimeout(check, 100));
+        await new Promise((resolve, reject) => {
+          const deadline = Date.now() + 8000;
+          const check = () => {
+            if (window.grecaptcha && typeof window.grecaptcha.execute === 'function') return resolve(null);
+            if (Date.now() > deadline) return reject(new Error('reCAPTCHA timeout'));
+            setTimeout(check, 100);
+          };
           check();
         });
 
-        const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' });
+        const token = await new Promise((resolve, reject) =>
+          window.grecaptcha.ready(() =>
+            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' }).then(resolve).catch(reject)
+          )
+        );
         const body = JSON.parse(init.body);
         body.recaptchaToken = token;
         init = { ...init, body: JSON.stringify(body) };
