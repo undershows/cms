@@ -1,6 +1,6 @@
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreController('api::fcm-token.fcm-token', ({ strapi }) => ({
+export default factories.createCoreController('api::fcm-token.fcm-token' as any, ({ strapi }) => ({
   async create(ctx) {
     const { token, platform } = ctx.request.body;
 
