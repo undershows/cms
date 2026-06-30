@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "fcm_tokens",
+  "info": {
+    "singularName": "fcm-token",
+    "pluralName": "fcm-tokens",
+    "displayName": "FCM Token"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "token": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "platform": {
+      "type": "string",
+      "required": true
+    }
+  }
+}
