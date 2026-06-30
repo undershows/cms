@@ -40,7 +40,12 @@ jobs:
             git fetch --all
             git reset --hard origin/main
 
-            docker build -t undershows-cms .
+            DOCKER_BUILDKIT=1 docker build \
+              --cache-from undershows-cms:cache \
+              --build-arg BUILDKIT_INLINE_CACHE=1 \
+              -t undershows-cms \
+              -t undershows-cms:cache \
+              .
 
             docker stop undershows-cms || true
             docker rm undershows-cms || true
