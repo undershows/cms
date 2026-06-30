@@ -1,5 +1,6 @@
 import type { Core } from '@strapi/strapi';
 import fetch from 'node-fetch';
+import admin from 'firebase-admin';
 
 const lastTriggered: Record<string | number, string> = {};
 
@@ -85,6 +86,47 @@ function shouldTriggerOnce(event: any, strapi: Core.Strapi): boolean {
   return true;
 }
 
+function initFirebase() {
+  if (admin.apps.length > 0) return;
+
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
+  });
+}
+
+async function sendWeeklyPushNotification(strapi: Core.Strapi) {
+  try {
+    initFirebase();
+
+    const tokens = await strapi.db.query('api::fcm-token.fcm-token').findMany({});
+
+    if (tokens.length === 0) {
+      strapi.log.info('[push] Nenhum token cadastrado, pulando envio.');
+      return;
+    }
+
+    const tokenList = tokens.map((t: any) => t.token);
+
+    const response = await admin.messaging().sendEachForMulticast({
+      tokens: tokenList,
+      notification: {
+        title: 'Undershows 🤘',
+        body: 'Ei! Não esquece de ver os shows do fim de semana!',
+      },
+    });
+
+    strapi.log.info(
+      `[push] Enviado: ${response.successCount} ok, ${response.failureCount} falhas.`
+    );
+  } catch (err) {
+    strapi.log.error('[push] Erro ao enviar push notification:', err);
+  }
+}
+
 export default {
   register() {},
 
@@ -95,6 +137,12 @@ export default {
       GITHUB_TOKEN: process.env.GITHUB_TOKEN ? 'SET' : 'MISSING',
       GITHUB_EVENT_TYPE: process.env.GITHUB_EVENT_TYPE,
       NODE_ENV: process.env.NODE_ENV,
+    });
+
+    // toda sexta às 11h (horário de Brasília = UTC-3, ou seja, 14h UTC)
+    strapi.cron.add('0 14 * * 5', async () => {
+      strapi.log.info('[push] Disparando push notification semanal...');
+      await sendWeeklyPushNotification(strapi);
     });
 
     strapi.log.info('🔥 Registrando lifecycle global para api::show.show');
