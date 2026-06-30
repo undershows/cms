@@ -140,9 +140,14 @@ export default {
     });
 
     // toda sexta às 11h (horário de Brasília = UTC-3, ou seja, 14h UTC)
-    strapi.cron.add('0 14 * * 5', async () => {
-      strapi.log.info('[push] Disparando push notification semanal...');
-      await sendWeeklyPushNotification(strapi);
+    strapi.cron.add({
+      weeklyPush: {
+        task: async () => {
+          strapi.log.info('[push] Disparando push notification semanal...');
+          await sendWeeklyPushNotification(strapi);
+        },
+        options: '0 14 * * 5',
+      },
     });
 
     strapi.log.info('🔥 Registrando lifecycle global para api::show.show');
