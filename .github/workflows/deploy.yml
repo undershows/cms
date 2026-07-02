@@ -23,12 +23,20 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          # Fixe a chave do host num secret SSH_KNOWN_HOSTS (saída de `ssh-keyscan <host>`)
+          # para verificação estrita. Sem ele, accept-new confia na 1ª conexão mas ainda
+          # rejeita se a chave do host mudar depois (bloqueia MITM em deploys seguintes).
+          if [ -n "${{ secrets.SSH_KNOWN_HOSTS }}" ]; then
+            echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/known_hosts
+          fi
           cat >> ~/.ssh/config << EOF
           Host server
             HostName ${{ secrets.SSH_HOST }}
             User ${{ secrets.SSH_USER }}
             IdentityFile ~/.ssh/deploy_key
-            StrictHostKeyChecking no
+            UserKnownHostsFile ~/.ssh/known_hosts
+            StrictHostKeyChecking accept-new
           EOF
 
       - name: Deploy to Server 🚀
