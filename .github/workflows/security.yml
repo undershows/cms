@@ -21,7 +21,7 @@ jobs:
       actions: read
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
@@ -31,7 +31,7 @@ jobs:
     name: Secret scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # A gitleaks-action exige licença paga para orgs; o binário (via container) é livre.
       - name: Secret scan (gitleaks)
         run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:latest dir /repo -c /repo/.gitleaks.toml --redact -v
@@ -40,10 +40,10 @@ jobs:
     name: Dependency audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
       # Report-only: o Strapi puxa dezenas de transitivas vulneráveis sem fix aplicável
       # por nós, então a build não quebra por dependência. As descobertas ficam no log
       # (e, via Trivy, na aba Security). Quem gera o gate é CodeQL/secret/misconfig.
@@ -57,7 +57,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Relatório completo (HIGH+CRITICAL) na aba Security, sem quebrar a build.
       - name: Trivy scan (SARIF)
