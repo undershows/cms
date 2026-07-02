@@ -1,0 +1,8 @@
+# Estende as regras padrão do gitleaks e adiciona allowlists específicos.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "reCAPTCHA site key é público por design (renderizado no client-side, não é segredo)"
+regexTarget = "line"
+regexes = ['''RECAPTCHA_SITE_KEY\s*=''']

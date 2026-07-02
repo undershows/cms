@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       # A gitleaks-action exige licença paga para orgs; o binário (via container) é livre.
       - name: Secret scan (gitleaks)
-        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:latest dir /repo --redact -v
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:latest dir /repo -c /repo/.gitleaks.toml --redact -v
 
   audit:
     name: Dependency audit
@@ -61,7 +61,7 @@ jobs:
 
       # Relatório completo (HIGH+CRITICAL) na aba Security, sem quebrar a build.
       - name: Trivy scan (SARIF)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scanners: vuln,misconfig,secret
@@ -78,7 +78,7 @@ jobs:
       # Gate: quebra a build em misconfig HIGH/CRITICAL do Dockerfile/IaC (acionável),
       # sem barrar em CVE de dependência transitiva que não conseguimos corrigir.
       - name: Trivy gate (misconfig)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: config
           severity: HIGH,CRITICAL
