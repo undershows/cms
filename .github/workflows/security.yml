@@ -57,3 +57,39 @@ jobs:
             exit 1
           fi
           echo "Sem CRITICAL (bitmask do yarn audit = $code)."
+
+  trivy:
+    name: Trivy (filesystem)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # Relatório completo (HIGH+CRITICAL) na aba Security, sem quebrar a build.
+      - name: Trivy scan (SARIF)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scanners: vuln,misconfig,secret
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+          format: sarif
+          output: trivy.sarif
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy.sarif
+
+      # Gate: quebra a build só em CRITICAL que tenha correção disponível.
+      - name: Trivy gate (falha em CRITICAL)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scanners: vuln,misconfig
+          ignore-unfixed: true
+          severity: CRITICAL
+          exit-code: '1'
+          format: table

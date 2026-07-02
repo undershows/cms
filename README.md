@@ -49,19 +49,28 @@ yarn start      # roda em produção, sem autoReload
 
 ### Variáveis de ambiente
 
-Copie `.env.example` para `.env`. Além das chaves padrão do Strapi (`APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET`, `ENCRYPTION_KEY`):
+Copie `.env.example` para `.env`.
+
+**Server:** `HOST`, `PORT`
+
+**Segredos do Strapi:** `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `ENCRYPTION_KEY`, `JWT_SECRET`
 
 | Variável | Descrição |
 |----------|-----------|
-| `DATABASE_CLIENT` / `DATABASE_URL` | Conexão com o PostgreSQL compartilhado |
-| `MAGALU_S3_ENDPOINT` / `_KEY` / `_SECRET` / `_BUCKET` | Object Storage dos uploads |
+| `DATABASE_CLIENT` | Cliente do banco (ex: `postgres`) |
+| `DATABASE_HOST` / `DATABASE_PORT` / `DATABASE_NAME` | Conexão com o PostgreSQL compartilhado |
+| `DATABASE_USERNAME` / `DATABASE_PASSWORD` | Credenciais do banco |
+| `DATABASE_SSL` / `DATABASE_SSL_REJECT_UNAUTHORIZED` | SSL da conexão |
+| `MAGALU_S3_KEY` / `MAGALU_S3_SECRET` / `MAGALU_S3_BUCKET` | Object Storage dos uploads |
+| `MAGALU_S3_ENDPOINT` / `MAGALU_S3_REGION` | Endpoint e região do bucket |
 | `MAGALU_S3_BASE_URL` | Base pública das imagens (`media.undershows.com.br`) |
+| `MAGALU_S3_PREFIX` | Prefixo (pasta) dos objetos no bucket |
 | `RESEND_API_KEY` | Envio de e-mail |
-| `RECAPTCHA_SECRET_KEY` | Verificação do reCAPTCHA no login do admin |
+| `RECAPTCHA_SITE_KEY` / `RECAPTCHA_SECRET_KEY` | reCAPTCHA v3 no login do admin |
 | `RECAPTCHA_HOSTNAME` | Domínio esperado no token reCAPTCHA (ex: `cms.undershows.com.br`) |
 | `GITHUB_OWNER` / `GITHUB_REPO` / `GITHUB_TOKEN` | Disparo do rebuild do site via `repository_dispatch` |
 | `GITHUB_EVENT_TYPE` | Nome do evento (padrão: `rebuild_site`) |
-| `FIREBASE_PROJECT_ID` / `_CLIENT_EMAIL` / `_PRIVATE_KEY` | Credenciais do push notification |
+| `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` | Credenciais do push notification |
 
 ## Deploy
 
