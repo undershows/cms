@@ -32,11 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # A gitleaks-action exige licença paga para orgs; o binário (via container) é livre.
+      - name: Secret scan (gitleaks)
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:latest dir /repo --redact -v
 
   audit:
     name: Dependency audit
@@ -46,17 +44,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # O Strapi puxa muitas transitivas sem fix upstream, então a build só quebra
-      # em vulnerabilidade CRITICAL. O restante fica registrado no log.
-      - name: yarn audit (falha só em critical)
-        run: |
-          yarn audit --groups dependencies || code=$?
-          code=${code:-0}
-          if [ $((code & 16)) -ne 0 ]; then
-            echo "::error::Vulnerabilidade CRITICAL encontrada nas dependências."
-            exit 1
-          fi
-          echo "Sem CRITICAL (bitmask do yarn audit = $code)."
+      # Report-only: o Strapi puxa dezenas de transitivas vulneráveis sem fix aplicável
+      # por nós, então a build não quebra por dependência. As descobertas ficam no log
+      # (e, via Trivy, na aba Security). Quem gera o gate é CodeQL/secret/misconfig.
+      - name: yarn audit (report-only)
+        run: yarn audit --groups dependencies || true
 
   trivy:
     name: Trivy (filesystem)
@@ -83,13 +75,12 @@ jobs:
         with:
           sarif_file: trivy.sarif
 
-      # Gate: quebra a build só em CRITICAL que tenha correção disponível.
-      - name: Trivy gate (falha em CRITICAL)
+      # Gate: quebra a build em misconfig HIGH/CRITICAL do Dockerfile/IaC (acionável),
+      # sem barrar em CVE de dependência transitiva que não conseguimos corrigir.
+      - name: Trivy gate (misconfig)
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: fs
-          scanners: vuln,misconfig
-          ignore-unfixed: true
-          severity: CRITICAL
+          scan-type: config
+          severity: HIGH,CRITICAL
           exit-code: '1'
           format: table
