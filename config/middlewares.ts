@@ -16,7 +16,6 @@ export default [
           ],
           'script-src': [
             "'self'",
-            "'unsafe-inline'",
             'https://www.google.com',
             'https://www.gstatic.com',
           ],
