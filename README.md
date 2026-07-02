@@ -1,5 +1,11 @@
 # Undershows — CMS
 
+[![Deploy](https://github.com/undershows/cms/actions/workflows/deploy.yml/badge.svg)](https://github.com/undershows/cms/actions/workflows/deploy.yml)
+[![Security](https://github.com/undershows/cms/actions/workflows/security.yml/badge.svg)](https://github.com/undershows/cms/actions/workflows/security.yml)
+[![CMS](https://img.shields.io/website?url=https%3A%2F%2Fcms.undershows.com.br&label=cms.undershows.com.br)](https://cms.undershows.com.br)
+[![Strapi](https://img.shields.io/badge/Strapi-5-4945FF?logo=strapi&logoColor=white)](https://strapi.io)
+[![Node](https://img.shields.io/badge/node-%E2%89%A520-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+
 CMS headless (Strapi 5) que é a fonte de conteúdo da [Undershows](https://undershows.com.br), publicado em [cms.undershows.com.br](https://cms.undershows.com.br). Guarda a agenda de shows e é consumido pelo [site](https://shows.undershows.com.br) em build time e pelo app Android.
 
 ## Como funciona
@@ -70,3 +76,4 @@ O container roda com hardening: usuário não-root, `--read-only`, `--cap-drop A
 - **CSP** restrita (sem `script-src 'unsafe-inline'`) e **CORS** limitado aos domínios da Undershows.
 - **Uploads** restritos a imagens.
 - **Deploy SSH** com verificação de host key (`StrictHostKeyChecking accept-new`, pinável via secret `SSH_KNOWN_HOSTS`).
+- **CI:** o workflow `security.yml` roda CodeQL (análise estática), secret scan (gitleaks) e audit de dependências (quebra em vulnerabilidade `CRITICAL`) a cada push, PR e semanalmente.
