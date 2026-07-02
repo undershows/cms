@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install SSH Client
         run: sudo apt-get update && sudo apt-get install -y openssh-client
