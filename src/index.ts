@@ -122,6 +122,12 @@ async function sendWeeklyPushNotification(strapi: Core.Strapi) {
     strapi.log.info(
       `[push] Enviado: ${response.successCount} ok, ${response.failureCount} falhas.`
     );
+
+    response.responses.forEach((r: any, i: number) => {
+      if (!r.success) {
+        strapi.log.error(`[push] Falha token[${i}]: ${r.error?.code} — ${r.error?.message}`);
+      }
+    });
   } catch (err) {
     strapi.log.error('[push] Erro ao enviar push notification:', err);
   }
