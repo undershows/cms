@@ -152,7 +152,7 @@ export default {
           strapi.log.info('[push] Disparando push notification semanal...');
           await sendWeeklyPushNotification(strapi);
         },
-        options: '55 2 * * *',
+        options: '0 14 * * 5',
       },
     });
 
