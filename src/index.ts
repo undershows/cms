@@ -113,9 +113,9 @@ async function sendWeeklyPushNotification(strapi: Core.Strapi) {
 
     const response = await admin.messaging().sendEachForMulticast({
       tokens: tokenList,
-      notification: {
-        title: 'Undershows 🤘',
-        body: 'Ei! Não esquece de ver os shows do fim de semana!',
+      data: {
+        title: 'Undershows',
+        body: 'Ei! Não esquece de ver os shows do fim de semana! 🤘',
       },
     });
 
@@ -152,7 +152,7 @@ export default {
           strapi.log.info('[push] Disparando push notification semanal...');
           await sendWeeklyPushNotification(strapi);
         },
-        options: '55 1 * * *',
+        options: '0 14 * * 5',
       },
     });
 
