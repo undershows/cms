@@ -123,11 +123,22 @@ async function sendWeeklyPushNotification(strapi: Core.Strapi) {
       `[push] Enviado: ${response.successCount} ok, ${response.failureCount} falhas.`
     );
 
+    const invalidTokens: string[] = [];
     response.responses.forEach((r: any, i: number) => {
       if (!r.success) {
         strapi.log.error(`[push] Falha token[${i}]: ${r.error?.code} — ${r.error?.message}`);
+        if (r.error?.code === 'messaging/registration-token-not-registered') {
+          invalidTokens.push(tokenList[i]);
+        }
       }
     });
+
+    if (invalidTokens.length > 0) {
+      await strapi.db.query('api::fcm-token.fcm-token').deleteMany({
+        where: { token: { $in: invalidTokens } },
+      });
+      strapi.log.info(`[push] Removidos ${invalidTokens.length} tokens inválidos.`);
+    }
   } catch (err) {
     strapi.log.error('[push] Erro ao enviar push notification:', err);
   }
