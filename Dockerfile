@@ -8,7 +8,7 @@ RUN corepack enable || true
 RUN apk add --no-cache python3 make g++
 
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --prefer-offline --no-audit --ignore-scripts
 
 FROM node:${NODE_VERSION} AS build
 WORKDIR /app
