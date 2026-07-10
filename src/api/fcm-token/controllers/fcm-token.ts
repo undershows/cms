@@ -28,6 +28,11 @@ setInterval(() => {
 }, WINDOW_MS).unref?.();
 
 export default factories.createCoreController('api::fcm-token.fcm-token' as any, ({ strapi }) => ({
+  async find(ctx) {
+    const tokens = await strapi.db.query('api::fcm-token.fcm-token').findMany({});
+    return ctx.send({ data: tokens });
+  },
+
   async create(ctx) {
     if (isRateLimited(ctx.request.ip)) {
       ctx.status = 429;
