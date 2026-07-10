@@ -12,9 +12,7 @@ export default {
       method: 'GET',
       path: '/fcm-tokens',
       handler: 'fcm-token.find',
-      config: {
-        auth: true,
-      },
+      config: {},
     },
   ],
 };
