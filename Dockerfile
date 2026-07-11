@@ -35,5 +35,8 @@ USER strapi
 
 EXPOSE 1337
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1:1337/_health || exit 1
+
 CMD ["node", "node_modules/@strapi/strapi/bin/strapi.js", "start"]
 
