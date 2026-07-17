@@ -1,0 +1,11 @@
+{
+  "name": "city-autofill",
+  "version": "0.1.0",
+  "private": true,
+  "strapi": {
+    "kind": "plugin",
+    "name": "city-autofill",
+    "displayName": "City Autofill",
+    "description": "Campo de cidade que seleciona a UF automaticamente para capitais e estados"
+  }
+}

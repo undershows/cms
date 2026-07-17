@@ -21,7 +21,8 @@
       "required": false
     },
     "city": {
-      "type": "string",
+      "type": "customField",
+      "customField": "plugin::city-autofill.city-with-uf",
       "required": true
     },
     "state": {

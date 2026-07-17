@@ -29,6 +29,11 @@ export default ({ env }) => ({
     },
   },
 
+  'city-autofill': {
+    enabled: true,
+    resolve: './src/plugins/city-autofill',
+  },
+
   email: {
     config: {
       provider: 'strapi-provider-email-resend',
