@@ -117,6 +117,15 @@ async function sendWeeklyPushNotification(strapi: Core.Strapi) {
         title: 'Undershows',
         body: 'Ei! Não esquece de ver os shows do fim de semana! 🤘',
       },
+      // Overrides web-only: ícone da marca + abre o site ao clicar. Android ignora.
+      webpush: {
+        notification: {
+          icon: 'https://shows.undershows.com.br/images/icons/icon-192x192-v2.png',
+        },
+        fcmOptions: {
+          link: 'https://shows.undershows.com.br',
+        },
+      },
     });
 
     strapi.log.info(
