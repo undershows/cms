@@ -165,14 +165,15 @@ export default {
       NODE_ENV: process.env.NODE_ENV,
     });
 
-    // toda sexta às 11h (horário de Brasília = UTC-3, ou seja, 14h UTC)
+    // Toda sexta às 11h no horário de Brasília. tz explícito pra não depender
+    // do TZ do container (evita a confusão UTC x horário local).
     strapi.cron.add({
       weeklyPush: {
         task: async () => {
           strapi.log.info('[push] Disparando push notification semanal...');
           await sendWeeklyPushNotification(strapi);
         },
-        options: '0 14 * * 5',
+        options: { rule: '0 11 * * 5', tz: 'America/Sao_Paulo' },
       },
     });
 
