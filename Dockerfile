@@ -1,4 +1,5 @@
-ARG NODE_VERSION=20-alpine
+# Node 22: Strapi 5.51+ puxa transitivas que exigem Node >=22.13 (ex: preferred-pm).
+ARG NODE_VERSION=22-alpine
 
 FROM node:${NODE_VERSION} AS deps
 WORKDIR /app
