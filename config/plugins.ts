@@ -24,7 +24,8 @@ export default ({ env }) => ({
 
       security: {
         allowedTypes: ['image/*'],
-        deniedTypes: ['application/x-sh', 'application/x-dosexec'],
+        // image/* inclui image/svg+xml; SVG pode carregar <script> (XSS), então negamos.
+        deniedTypes: ['application/x-sh', 'application/x-dosexec', 'image/svg+xml'],
       },
     },
   },
