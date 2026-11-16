@@ -16,3 +16,8 @@ docker-compose.yml
 npm-debug.log
 yarn-error.log
 
+# Dumps do banco: o backup pre-upgrade grava em /var/backups/strapi, fora do
+# build context, mas se algum dump cair aqui ele nao entra na imagem.
+*.sql
+*.dump
+
